@@ -10969,4 +10969,43 @@ section.resume-section .resume-section-content {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
+  /* Improve heading readability on smaller screens */
+@media (max-width: 576px) {
+  h1 {
+      font-size: 1.75rem;
+  }
+  h2 {
+      font-size: 1.5rem;
+  }
+  h3 {
+      font-size: 1.25rem;
+  }
+  p, .subheading, li {
+      font-size: 1rem;
+  }
+  .resume-section-content {
+      padding: 1rem;
+  }
+  .project-screenshots img {
+      max-width: 100%;
+      height: auto;
+  }
+}
+
+/* Make list items easier to read on small screens */
+.resume-section-content ul {
+  padding-left: 1.2rem;
+}
+
+/* Ensure sidebar menu looks good on small screens */
+.navbar-toggler {
+  margin-left: auto;
+}
+
+/* Improve spacing around project images */
+.project-screenshots img {
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
 }
