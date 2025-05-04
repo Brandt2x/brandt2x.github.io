@@ -11015,4 +11015,13 @@ section.resume-section .resume-section-content {
     border-width: 0.25rem;
   }
 }
+@media (max-width: 576px) {
+  .img-profile {
+    max-width: 96px;  /* or use 6rem */
+    height: auto;
+    border-width: 3px;
+    margin-bottom: 1rem;
+  }
+}
+
 }
