@@ -11008,4 +11008,11 @@ section.resume-section .resume-section-content {
   margin-bottom: 1rem;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
 }
+@media (max-width: 576px) {
+  #sideNav .navbar-brand .img-profile {
+    max-width: 6rem;
+    max-height: 6rem;
+    border-width: 0.25rem;
+  }
+}
 }
