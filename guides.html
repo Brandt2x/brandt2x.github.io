@@ -1,0 +1,144 @@
+<h2 class="mb-4">🛡️ How I Built a Splunk Dashboard to Detect Failed SSH Logins on Ubuntu</h2>
+<p><strong>Tools used:</strong> Splunk Enterprise, Ubuntu Server, VirtualBox, auth.log</p>
+
+<div class="accordion" id="sshGuide">
+
+  <!-- Step 1 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step1-heading">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1" aria-expanded="true" aria-controls="step1">
+        Step 1: Set Up the Environment
+      </button>
+    </h2>
+    <div id="step1" class="accordion-collapse collapse show" aria-labelledby="step1-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <ul>
+          <li>Launch VirtualBox and start your Ubuntu Server VM.</li>
+          <li>Ensure Splunk Enterprise is installed on the same VM or a separate Ubuntu VM.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step2-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2" aria-expanded="false" aria-controls="step2">
+        Step 2: Install Splunk Enterprise
+      </button>
+    </h2>
+    <div id="step2" class="accordion-collapse collapse" aria-labelledby="step2-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <ol>
+          <li>Download Splunk Enterprise <code>.deb</code> from <a href="https://splunk.com" target="_blank">splunk.com</a>.</li>
+          <li>Install it with:
+            <pre><code>sudo dpkg -i splunkfilename.deb</code></pre>
+          </li>
+          <li>Start and accept license:
+            <pre><code>sudo /opt/splunk/bin/splunk start --accept-license</code></pre>
+          </li>
+          <li>Log into Splunk Web at <code>http://localhost:8000</code></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step3-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3" aria-expanded="false" aria-controls="step3">
+        Step 3: Simulate Failed SSH Login Attempts
+      </button>
+    </h2>
+    <div id="step3" class="accordion-collapse collapse" aria-labelledby="step3-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <ul>
+          <li>From a terminal, run: <code>ssh testuser@your_vm_ip</code></li>
+          <li>Enter the wrong password multiple times (10+).</li>
+          <li>Verify logs with:
+            <pre><code>grep "Failed password" /var/log/auth.log</code></pre>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step4-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step4" aria-expanded="false" aria-controls="step4">
+        Step 4: Ingest SSH Logs into Splunk
+      </button>
+    </h2>
+    <div id="step4" class="accordion-collapse collapse" aria-labelledby="step4-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <ol>
+          <li>Go to Splunk Web → Settings → Add Data</li>
+          <li>Select "Monitor" → "Files & Directories"</li>
+          <li>Enter <code>/var/log/auth.log</code></li>
+          <li>Set source type to <code>linux_secure</code> or custom</li>
+          <li>Assign it to the <code>main</code> index</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step5-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step5" aria-expanded="false" aria-controls="step5">
+        Step 5: Search for Failed SSH Attempts
+      </button>
+    </h2>
+    <div id="step5" class="accordion-collapse collapse" aria-labelledby="step5-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <p>Use the following SPL query in the search bar:</p>
+        <pre><code>index=main "Failed password" sourcetype=linux_secure</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step6-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step6" aria-expanded="false" aria-controls="step6">
+        Step 6: Build the SSH Attack Dashboard
+      </button>
+    </h2>
+    <div id="step6" class="accordion-collapse collapse" aria-labelledby="step6-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <p>Create a new dashboard and add these panels:</p>
+        <p><strong>Panel 1 – Most failed attempts by IP and user:</strong></p>
+        <pre><code>index=main "Failed password"
+| rex "from (?&lt;ip&gt;\d{1,3}(?:\.\d{1,3}){3})"
+| stats count by ip, user
+| sort - count</code></pre>
+
+        <p><strong>Panel 2 – Timechart of failed attempts:</strong></p>
+        <pre><code>index=main "Failed password"
+| timechart count by host</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="step7-heading">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step7" aria-expanded="false" aria-controls="step7">
+        Step 7: Optional Alerting
+      </button>
+    </h2>
+    <div id="step7" class="accordion-collapse collapse" aria-labelledby="step7-heading" data-bs-parent="#sshGuide">
+      <div class="accordion-body">
+        <p>Set up an alert for high-frequency login failures:</p>
+        <pre><code>index=main "Failed password"
+| stats count by ip
+| where count > 5</code></pre>
+        <p>Save it as an alert in Splunk and set your trigger actions (email, dashboard, etc).</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="mt-4">This hands-on project helped me gain experience with log monitoring, threat detection, and SPL — key skills for any aspiring SOC analyst.</p>
