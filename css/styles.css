@@ -11023,25 +11023,5 @@ section.resume-section .resume-section-content {
     margin-bottom: 1rem;
   }
 }
-body.dark-mode {
-  background-color: #121212;
-  color: #f0f0f0;
-}
 
-.dark-mode .resume-section-content {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-}
-
-.dark-mode a {
-  color: #80cbc4;
-}
-
-.dark-mode .navbar {
-  background-color: #1a1a1a !important;
-}
-
-.dark-mode .navbar-nav .nav-link {
-  color: #f0f0f0 !important;
-}
 }
