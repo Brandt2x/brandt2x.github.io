@@ -11041,3 +11041,10 @@ summary {
         padding-right: 1rem;
     }
 }
+img {
+    transition: transform 0.2s ease;
+}
+
+img:hover {
+    transform: scale(1.02);
+}
